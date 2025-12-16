@@ -1,0 +1,1326 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Red Team Capability Maturity Model</title>
+    <meta name="description" content="A standard-format Red Team Capability Maturity Model to guide and report on team maturity.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-red: #E60000;
+            --dark-red: #960000;
+            --text-sharp: #ffffff;
+            --text-muted: #cccccc;
+            --bg-dark: #0a0a0a;
+            --bg-overlay: rgba(0, 0, 0, 0.5);
+            --gradient: linear-gradient(135deg, #6699FF 0%, #FF3366 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-sharp);
+            line-height: 1.6;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #0a0a1a 0%, #1a0a1a 100%);
+            z-index: -1;
+        }
+
+        .background::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: radial-gradient(circle at 50% 0%, rgba(150, 0, 0, 0.3) 0%, transparent 50%);
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 60px;
+            background: var(--bg-overlay);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 30px;
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 14px;
+            letter-spacing: 0.5px;
+            color: var(--text-sharp);
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--text-sharp);
+            text-decoration: none;
+            font-size: 14px;
+            transition: opacity 0.3s;
+        }
+
+        .nav-links a:hover {
+            opacity: 0.7;
+        }
+
+        .mobile-menu {
+            display: none;
+        }
+
+        /* Main Content */
+        main {
+            padding-top: 130px;
+            max-width: 1700px;
+            margin: 0 auto;
+            padding-left: 30px;
+            padding-right: 30px;
+        }
+
+        /* Hero Section */
+        .hero {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-items: center;
+            margin-bottom: 70px;
+        }
+
+        .hero-content h1 {
+            font-size: 4rem;
+            font-weight: 700;
+            line-height: 1.1;
+            margin-bottom: 20px;
+        }
+
+        .hero-content h1 .red {
+            color: var(--primary-red);
+        }
+
+        .hero-content h1 .gradient {
+            background: var(--gradient);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-content p {
+            font-size: 1.1rem;
+            color: var(--text-sharp);
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 14px 28px;
+            background: var(--dark-red);
+            color: white;
+            border: none;
+            border-radius: 999px;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s;
+            box-shadow: 0 10px 20px -10px rgba(150, 0, 0, 0.5);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 30px -10px rgba(150, 0, 0, 0.7);
+        }
+
+        .hero-image {
+            text-align: center;
+        }
+
+        .hero-image img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+        }
+
+        /* Video Link */
+        .video-link {
+            text-align: center;
+            margin-bottom: 50px;
+            font-size: 1.2rem;
+        }
+
+        .video-link a {
+            color: #5E5DF0;
+            text-decoration: underline;
+        }
+
+        /* Assumptions Section */
+        .assumptions {
+            background: var(--bg-overlay);
+            border-radius: 12px;
+            padding: 40px;
+            margin-bottom: 60px;
+        }
+
+        .assumptions h2 {
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 30px;
+        }
+
+        .assumptions ul {
+            list-style: none;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .assumptions li {
+            padding: 15px 0;
+            padding-left: 25px;
+            position: relative;
+        }
+
+        .assumptions li::before {
+            content: '•';
+            position: absolute;
+            left: 0;
+            top: 0;
+            transform: translateY(0.25em);
+            color: var(--text-sharp);
+            font-size: 1.5rem;
+        }
+
+        /* Level Descriptors */
+        .level-descriptors {
+            margin-bottom: 60px;
+        }
+
+        .level-descriptors h3 {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+        }
+
+        .level-descriptors ul {
+            list-style: none;
+        }
+
+        .level-descriptors li {
+            padding: 12px 0;
+            padding-left: 25px;
+            position: relative;
+        }
+
+        .level-descriptors li::before {
+            content: '•';
+            position: absolute;
+            left: 0;
+            top: 0;
+            transform: translateY(0.15em);
+            color: var(--text-sharp);
+            font-size: 1.5rem;
+        }
+
+        .level-descriptors strong {
+            color: var(--primary-red);
+        }
+
+        /* Model Categories */
+        .model-categories {
+            margin-bottom: 60px;
+        }
+
+        .category {
+            background: var(--bg-overlay);
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .category:hover {
+            background: rgba(0, 0, 0, 0.7);
+        }
+
+        .category-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .category-header h2 {
+            font-size: 2rem;
+            color: var(--primary-red);
+        }
+
+        .category-icon {
+            font-size: 1.5rem;
+            transition: transform 0.3s;
+        }
+
+        .category.active .category-icon {
+            transform: rotate(180deg);
+        }
+
+        .category-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease;
+        }
+
+        .category.active .category-content {
+            max-height: 10000px;
+        }
+
+        .subject-section {
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .subject-section:first-child {
+            margin-top: 20px;
+        }
+
+        .subject-title {
+            font-size: 1.5rem;
+            color: var(--text-sharp);
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .maturity-levels {
+            display: grid;
+            gap: 15px;
+        }
+
+        .maturity-level {
+            background: rgba(255, 255, 255, 0.03);
+            border-left: 3px solid var(--primary-red);
+            padding: 20px;
+            border-radius: 6px;
+            transition: all 0.3s;
+        }
+
+        .maturity-level:hover {
+            background: rgba(255, 255, 255, 0.05);
+            transform: translateX(5px);
+        }
+
+        .maturity-level h4 {
+            font-size: 1.2rem;
+            margin-bottom: 12px;
+            color: var(--primary-red);
+            font-weight: 600;
+        }
+
+        .maturity-level p {
+            line-height: 1.7;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        /* Matrix Table */
+        .matrix-section {
+            margin-bottom: 60px;
+        }
+
+        .matrix-section h2 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+
+        .matrix-intro {
+            text-align: center;
+            color: var(--text-muted);
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+        }
+
+        .matrix-container {
+            overflow-x: auto;
+            background: var(--bg-overlay);
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .matrix-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            min-width: 800px;
+        }
+
+        .matrix-table th,
+        .matrix-table td {
+            padding: 12px 8px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.85rem;
+        }
+
+        .matrix-table th {
+            background: rgba(150, 0, 0, 0.3);
+            color: var(--text-sharp);
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .matrix-table th:first-child {
+            border-top-left-radius: 8px;
+        }
+
+        .matrix-table th:last-child {
+            border-top-right-radius: 8px;
+        }
+
+        .matrix-table tbody tr:hover {
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .matrix-table .category-row {
+            background: rgba(150, 0, 0, 0.2);
+            font-weight: 600;
+            color: var(--primary-red);
+        }
+
+        .matrix-table .category-row td {
+            padding: 15px 12px;
+            font-size: 1rem;
+        }
+
+        .matrix-table .subject-cell {
+            font-weight: 500;
+            color: var(--text-sharp);
+            min-width: 150px;
+        }
+
+        .matrix-table .level-cell {
+            color: var(--text-muted);
+            line-height: 1.4;
+            max-width: 200px;
+        }
+
+        .level-header {
+            text-align: center;
+            font-size: 0.8rem;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .mobile-menu {
+                display: block;
+            }
+
+            .hero {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-content h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero-buttons {
+                flex-direction: column;
+            }
+
+            .assumptions, .category {
+                padding: 25px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="background"></div>
+
+    <nav>
+        <a href="/" class="logo">RED TEAM MATURITY</a>
+        <div class="nav-links">
+            <a href="https://www.redteammaturity.com">원본 프로젝트</a>
+            <a href="https://github.com/RedRaccoonCommunity/redteam-cmm-kr" target="_blank" rel="noopener">GitHub</a>
+        </div>
+        <div class="mobile-menu">☰</div>
+    </nav>
+
+    <main>
+        <section class="hero">
+            <div class="hero-content">
+                <h1>
+                    <span class="red">RED</span><br>
+                    <span class="red">TEAM</span><br>
+                    <span class="gradient">MATURITY</span>
+                </h1>
+                <p>Red Team CMM(Capability Maturity Model)은 인하우스 레드팀의 성숙도를 평가, 계획, 보고하기 위한 표준화된 커뮤니티 기반의 성숙도 모델입니다.</p>
+                <p>본 페이지는 <a href="https://www.redteammaturity.com/" target="_blank" rel="noopener">Red Team CMM 프로젝트</a>의 한글 번역판입니다. 모든 크레딧은 원작자와 기여자들에게 있습니다.</p>
+                <p>의역이 포함되어 있고, 생략된 항목들도 있습니다. 완전한 내용을 위해서는 원본 프로젝트를 참고하시기 바랍니다.</p>
+                <div class="hero-buttons">
+                    <a href="https://www.redteammaturity.com/" class="btn">원본 프로젝트</a>
+                </div>
+            </div>
+            <div class="hero-image">
+                <img src="https://image.typedream.com/cdn-cgi/image/width=750,format=auto,fit=scale-down,quality=100/https://api.typedream.com/v0/document/public/e40c5dc5-9883-4a55-aff3-614a99f5da71/2KBmOokwqFit0IHO35xOd6dpPWb_keyboard_blur_fade.png" alt="Red Team Keyboard" loading="lazy">
+            </div>
+        </section>
+
+        <section class="assumptions">
+            <h2>배경</h2>
+            <ul>
+                <li>본 모델은 사내 <u>인하우스 레드팀</u>에 초점을 맞췄습니다. 보안 컨설팅 회사도 몇 개 항목은 적용될 수 있겠으나, 적용이 불가한 항목들 또한 있습니다.</li>
+                <li>본 모델은 인하우스 레드팀에 <u>실제 오퍼레이션을 뛸 수 있는 오퍼레이터</u>들이 있다는 것을 전제로 합니다. 외주 레드팀 인력 관리/운영 하는 담당자들만 있다면, 본 모델을 적용할 수 없습니다. </li>
+                <li>낮은 레벨이 부정적 요소인 항목들을 제외하고는 (예: "레드팀이 다른 오펜시브 시큐리티 업무와 구분되지 않음"), 이전 레벨의 기준을 충족하지 않고 레벨을 건너뛸 수 없습니다. 예를 들어, 유명한 레드팀 툴을 발표해서 지식 공유 항목의 레벨 5라고 치더라도, 조직 내에서 정기적인 지식 공유를 수행하지 않는다면 (지식 공유 항목 레벨 3), 여전히 레벨 2지, 레벨 5라고 볼 수 없습니다. </li>
+                <li>팀이 특정 주제의 레벨 1에 명시된 항목들을 충족하지 못하면, 팀은 해당 주제에서 레벨 0에 해당합니다. 팀의 평균 레벨을 계산할 때 레벨 0 주제를 제외해서는 안됩니다</li>
+            </ul>
+        </section>
+
+        <section class="level-descriptors">
+            <h3>레벨 정의</h3>
+            <ul>
+                <li><strong>Level 1 - 초기 (Initial)</strong> : 비정기적, 일관성 없음, 계획되지 않음, 체계화되지 않음, 획일적인 구현, 기초적인 기술 역량, 작전 보안을 고려하지 않음</li>
+                <li><strong>Level 2 - 재현 (Repeatable)</strong> : 직관적임, 문서화 되지 않음, 필요할 때만 발생, 일관성 없는 수동적인 프로세스, 나름의 역량을 갖춤, 부분적인 작전 보안(OPSEC) 고려</li>
+                <li><strong>Level 3 - 체계화 (Defined)</strong> : 문서화됨, 예측 가능함, 가끔 평가됨, 이해됨, 맞춤형 기술 솔루현, 문서화된 수동 프로세스, 작전 보안 Best Practice</li>
+                <li><strong>Level 4 - 역량 확보 (Managed/Capable)</strong> : 체계적으로 관리됨, 공싱적, 가끔 자동화됨, 자주 평가됨, 맞춤형 툴 및 솔루션이 성공적으로 도입/구현됨</li>
+                <li><strong>Level 5 - 최적화 (Optimized)</strong> : 지속적이고 효과적임, 통합됨, 선제적, 자동화, 맞춤화된 사내 솔루션, 효과적인 맞춤 솔루션, 높은 수준의 작전 보안</li>
+            </ul>
+        </section>
+
+        <section class="matrix-section">
+            <h2>레드팀 성숙도 매트릭스</h2>
+            <p class="matrix-intro">전체 항목 및 성숙도 레벨 개요</p>
+
+            <div class="matrix-container">
+                <table class="matrix-table">
+                    <thead>
+                        <tr>
+                            <th>카테고리 / 항목</th>
+                            <th class="level-header">Level 1<br><small>초기</small></th>
+                            <th class="level-header">Level 2<br><small>재현</small></th>
+                            <th class="level-header">Level 3<br><small>체계화</small></th>
+                            <th class="level-header">Level 4<br><small>역량 확보</small></th>
+                            <th class="level-header">Level 5<br><small>최적화</small></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="category-row">
+                            <td colspan="6">🔄 Processes (프로세스)</td>
+                        </tr>
+                        <tr>
+                            <td class="subject-cell">지속적 성장</td>
+                            <td class="level-cell">개인적으로 업무를 보며, 가끔 개인 노트를 작성합니다</td>
+                            <td class="level-cell">목표지향적으로 움직이며, 주요 오퍼레이션 이후 얼마나 발전했는지 알아보기 위해 사후 분석 및 회고를 합니다. 팀의 부족한 부분에 대한 전반적인 이해가 있으며, 이를 해결하기 위한 대략적인 계획이 있습니다 </td>
+                            <td class="level-cell">주기적으로 레드팀 오퍼레이션 외 다른 업무들에 대한 사후 분석 및 회고를 진행합니다. 팀의 개선 사항과 운영 목표를 달성하기 위한 명확한 로드맵을 갖고 있습니다</td>
+                            <td class="level-cell">로드맵 목표들에 대한 진행 상황을 모니터링 하기 위한 지표가 있습니다. 개선 사항은 때때로 달성되며, 발견된 문제와 달성하고자 하는 목표에 기반한 업무들이 만들어집니다</td>
+                            <td class="level-cell">레드팀 기회에 대해 논의하고 현 방향을 유지할지 혹은 피벗할지 결정합니다. 사후 검토를 통해 프로세스 및 오퍼레이션 개선 사항을 일관되게 도출합니다. 보안 조직 계획 수립 시 레드팀 로드맵이 반영됩니다</td>
+                        </tr>
+                        <tr>
+                            <td class="subject-cell">지식 베이스</td>
+                            <td class="level-cell">필요에 따라 지식을 공유하기 위한 미팅/세션을 진행합니다</td>
+                            <td class="level-cell">체계없는 기록과 문서들이 여러 장소 또는 매체에 저장되어 있습니다</td>
+                            <td class="level-cell">팀 전체가 사용하는 지식 베이스가 있지만, 불규칙적으로 업데이트 됩니다</td>
+                            <td class="level-cell">팀 전체가 사용하는 하드닝된 지식 베이스가 있고, 자주 하는 업무 및 필요 사항들을 문서화 해놨습니다</td>
+                            <td class="level-cell">팀 전체가 사용하고 안전하게 관리되고 있는 지식 베이스를 보유하고 있으며, 정기적으로 효용성을 검토하고 레드팀의 모든 활동 과정에서 주기적으로 이를 업데이트합니다</td>
+                        </tr>
+                        <tr>
+                            <td class="subject-cell">업무 관리</td>
+                            <td class="level-cell">팀원들이 개인적으로 서로 다른 목표를 정하고 실행합니다</td>
+                            <td class="level-cell">운영 목표와 발전 목표를 이해하고 있지만, 해당 목표들을 관리하거나 책임을 지는 인원은 없습니다</td>
+                            <td class="level-cell">현재와 미래 업무에 관련된 로드맵을 가지고 있으며, 리더쉽이 책임을 집니다</td>
+                            <td class="level-cell">업무 관리를 위한 플랫폼을 사용하며, 성과 측정 기준을 명확히 이해하고 있습니다. 리더쉽의 감시 없이도 팀원 스스로 목표 달성에 대한 책임을 집니다</td>
+                            <td class="level-cell">팀원들은 팀 내 다른 활동에 대한 깊은 이해가 있어 필요시 협업하거나 중요 영역에서 역량을 집중할 수 있습니다. 팀 전체가 인지하고 있는 백로그(backlog)를 기반으로 자기주도적으로 작업할 수 있도록 작업 관리 플랫폼이 효과적으로 활용되고 있습니다</td>
+                        </tr>
+                        <tr>
+                            <td class="subject-cell">오퍼레이션 계획 및 선정</td>
+                            <td class="level-cell">오퍼레이션 목표는 개인의 의견이나 긴급한 필요에 의해 결정되며, 팀 전체의 의견이 포함되지 않습니다. 오퍼레이션은 시작 전 몇 주 동안 계획됩니다</td>
+                            <td class="level-cell">회사의 주요 서비스 및 인프라를 대상으로 오퍼레이션을 진행합니다</td>
+                            <td class="level-cell">위협 인텔리전스를 활용해 오퍼레이션 목표를 만들어내며, 적어도 1분기 동안 계획합니다. 오퍼레이션과 관련된 제안 사항 및 요구 사항을 받아드리는 명확한 절차를 갖고 있습니다</td>
+                            <td class="level-cell">블루팀(사이버 위협 인텔리전스, 침해 대응, 위협 헌팅)과  IT 운영팀의 고민, 우려, 문제를 반영해 오퍼레이션이 계획 되며, 적어도 2분기 이상의 계획 기간을 갖습니다</td>
+                            <td class="level-cell">비즈니스적 필요성, 위협 인텔리전스, 중요도, 조직에서 정의한 기준등에 관련된 객관적인 지표를 바탕으로 오퍼레이션이 계획됩니다. 긴급한 문제를 해결하기 위해 비정기적으로 긴급 오퍼레이션이 수행될 수 있지만, 이는 다른 업무 산출물에 영향을 주지 않습니다.  </td>
+                        </tr>
+                        <tr>
+                            <td class="subject-cell">오퍼레이션 문서화</td>
+                            <td class="level-cell">업무와 관련된 노트를 개인이 작성해 보관합니다</td>
+                            <td class="level-cell">툴들이 만들어낸 로그를 바탕으로 문서화 합니다</td>
+                            <td class="level-cell">문서 또는 로그를 수동으로 작성하거나, 툴들의 "내보내기" 기능을 사용합니다</td>
+                            <td class="level-cell">행위 및 로그는 중앙화된 위치에 저장되며, 약간의 문서화/로깅 자동화가 존재합니다</td>
+                            <td class="level-cell">레드팀 활동은 중앙 저장소에 문서화/기록 되며, 침해지표(IoC)와 행위에 대한 자동 보고 기능이 존재합니다 </td>
+                        </tr>
+                        <tr>
+                            <td class="subject-cell">구성 관리</td>
+                            <td class="level-cell">소스코드, 인프라 구성 ,문서화, 툴을 일관성 없이 다양한 곳에 보관합니다</td>
+                            <td class="level-cell">소스코드, 인프라 구성 ,문서화, 툴을 지정된 위치에 보관하지만, 버전 관리는 없습니다</td>
+                            <td class="level-cell">업계 표준의 코드 저장소 및 버전 관리 툴을 사용하며, 각각 항목들에 대한 버전 관리가 이뤄집니다</td>
+                            <td class="level-cell">Merge, Pull 리퀘스트와 비슷한 방식의 방법으로 검증된 버전 관리를 진행합니다</td>
+                            <td class="level-cell">자동화된 CI/CD 프로세스를 활용해 신속한 배포와 품질 유지를 실현합니다</td>
+                        </tr>
+                        <tr>
+                            <td class="subject-cell">자원 관리</td>
+                            <td class="level-cell">라이센스, 계정 정보, 도메인 등의 자원들이 관리되고 있지 않으며, 소유권은 여러 사람에게 분산되어 있습니다</td>
+                            <td class="level-cell">한명의 담당자가 자원을 관리하지만, 이와 관련된 정보가 전체 팀에게 공유되어 있지 않습니다</td>
+                            <td class="level-cell">중앙화된 방식으로 자원들이 관리되며, 레드팀에 필요한 계정 정보들은 안전하게 보관됩니다</td>
+                            <td class="level-cell">정기적인 비용, 자원의 필요, 혹은 만료 여부를 분기별로 검토합니다</td>
+                            <td class="level-cell">관리/트래킹 체계를 통해 앞으로 30일 내에 처리해야할 작업을 알람 등으로 명확히 표시합니다</td>
+                        </tr>
+                        <tr class="category-row">
+                            <td colspan="6">💻 Technology (기술)</td>
+                        </tr>
+                        <tr>
+                            <td class="subject-cell">툴링 (Tooling)</td>
+                            <td class="level-cell">이미 존재하는 툴을 그대로 사용하고, 간단한 커스텀 스크립트를 제작할 수 있습니다. 오퍼레이션에 필요한 요구 사항을 툴링으로 해결 할 수 없는 상태입니다</td>
+                            <td class="level-cell">현존하는 툴을 수정하고 사용할 수 있는 정도의 역량을 갖췄습니다. 최신 버전의 C2 프레임워크들이 운영되고 있으며, 오퍼레이션에 필요한 요구 사항을 충족합니다</td>
+                            <td class="level-cell">개발, 혹은 사용하는 툴들이 오퍼레이션의 주요 요구 사항을 충족합니다</td>
+                            <td class="level-cell">오퍼레이션 요구 사항을 달성하기 위한 커스텀 툴을 개발하거나 현존하는 툴들을 수정합니다. 일상적인 업무 처리를 위한 자동화나 대규모 실행이 가능합니다</td>
+                            <td class="level-cell">커스텀 또는 기타 툴로 레드팀 오퍼레이션의 모든 요구사항을 충족할 수 있으며, 오퍼레이션상 필요할 때 커스텀 C2 프레임워크를 사용합니다 </td>
+                        </tr>
+                        <tr>
+                            <td class="subject-cell">인프라</td>
+                            <td class="level-cell">현재 사용중인 사내망의 호스트 워크스테이션을 통해 오퍼레이션을 진행합니다. 레드팀 인프라는 작전 보안(OPSEC)을 고려하지 않습니다</td>
+                            <td class="level-cell">인터넷에 공개된, 외부에서 접근 가능한 정적 인프라 1개를 운영하고 있습니다. 오퍼레이션 마다 인프라를 수동으로 만들며, 설정이 일정하지 않습니다. 최소한의 작전 보안을 적용합니다</td>
+                            <td class="level-cell">수동 설정을 빨리 하기 위해 인프라 배포와 관련된 문서화가 잘 되어있습니다. 최선의 작전 보안 관행을 적용합니다</td>
+                            <td class="level-cell">인프라 배포는 자동화 되어 있습니다. 인프라 보안과 관련해 자체 보안 평가를 실시합니다</td>
+                            <td class="level-cell">레드팀 인프라는 쉽게 커스터마이징이 가능합니다. 인프라 설정 시 작전 보안을 고려하며, 내부, 혹은 외부 써드 파티로부터 검토 및 점검을 받습니다. 오퍼레이션 시 다양한 C2 채널 (HTTP/S, DNS, DoH, ICMP, 등)을 사용합니다. </td>
+                        </tr>
+                        <tr>
+                            <td class="subject-cell">테스트 환경</td>
+                            <td class="level-cell">테스트 환경은 있지만, 다양한 설정 (VM, 운영체제 버전, AV 시그니쳐 날짜, 등)이 제각각입니다</td>
+                            <td class="level-cell">일관성 있지만 최소한으로 커스터마이징된 테스트 환경을 갖췄습니다</td>
+                            <td class="level-cell">자사의 엔드포인트 보안 솔루션들이 반영된 테스트 환경을 갖췄습니다</td>
+                            <td class="level-cell">자사의 보안 솔루션 스택이 반영된 테스트 환경을 갖췄으며, 환경 배포 자동화가 가능합니다</td>
+                            <td class="level-cell">(레드팀이 아니라) 회사의 보안 조직은 협업을 위해 별도의 테스트 환경을 운영하고 있습니다. 이 환경은 프로덕션에 영향을 주지 않고 기술 스택의 다양한 요소들을 테스트 하도록 재구성할 수 있습니다. </td>
+                        </tr>
+                        <tr class="category-row">
+                            <td colspan="6">👥 People (인력)</td>
+                        </tr>
+                        <tr>
+                            <td class="subject-cell">블루팀과의 관계</td>
+                            <td class="level-cell">블루팀의 레드팀 소통 담당자가 정해져 있지 않습니다. 블루팀과의 소통은 일관성 없고, 산발적으로 이뤄집니다</td>
+                            <td class="level-cell">블루팀 담당자가 정해져 있습니다. 소통은 비정기적으로 이뤄집니다. 팀 구성원들 끼리 소통 및 지식을 공유합니다. 레드팀 오퍼레이션 중 갈등 해결 프로세스에 대한 일반적인 이해가 있습니다</td>
+                            <td class="level-cell">블루팀이 이해관계자로서 레드팀과 같이 일하며, 갈등 해소 프로세스에 대한 문서화가 존재합니다. 블루팀과 정기적으로 만나 업무 필요 사항, 성과 및 지표, 레드팀 관련 주제 등을 공유합니다</td>
+                            <td class="level-cell">다른 팀들과의 지식 공유 및 유대감 형성을 위해 정기적으로 만나 소통합니다. 갈등 해소 프로세스와 관련된 담당자, 소통 방법, R&R이 명확하게 관리됩니다</td>
+                            <td class="level-cell">작전 계획 시 블루팀의 우려사항을 이해하고 이를 활용합니다. 블루팀 팀원들과 긴밀한 개인적 관계를 통해 빈번하고 비정기적인 지식 공유 및 개선이 이루어집니다</td>
+                        </tr>
+                        <tr>
+                            <td class="subject-cell">IT/엔지니어링 팀과의 관계</td>
+                            <td class="level-cell">각 팀들의 연락 담당자가 없으며, 가끔 해당 도메인 전문가/담당자에게 질문하는 등의 일관성 없는 소통이 이뤄집니다</td>
+                            <td class="level-cell">각 팀에 연락을 받을만한 담당자를 알고 있습니다. 팀원들끼리 비정기적으로 소통합니다</td>
+                            <td class="level-cell">중요 엔지니어링 팀들의 분야 전문가(SME)를 알고 있습니다. 레드팀 업무 이후 엔지니어링 팀은 각자 분야에 맞는 레드팀 보고서를 받습니다</td>
+                            <td class="level-cell">엔지니어링 팀들과 레드팀은 정기적으로 만나며, IT 환경 변경 사항과 관련해 정기적으로 회의를 진행합니다. 지식 공유와 유대감 형성을 위해 정기적으로 소통합니다</td>
+                            <td class="level-cell">엔지니어링 및 아키텍처의 계획 또는 구현 단계 전에 레드팀 작전이 영향을 미칩니다. 엔지니어링 팀원들과 긴밀한 개인적 관계를 통해 빈번하고 비정기적인 지식 공유 및 개선이 이루어집니다</td>
+                        </tr>
+                        <tr>
+                            <td class="subject-cell">경영진과의 관계</td>
+                            <td class="level-cell">일관성 없이 간헐적으로 소통합니다. 예를 들어 경영진(임원)들은 레드팀 보고회에 불규칙적으로 참석합니다</td>
+                            <td class="level-cell">보안 임원(CISO)은 레드팀으로부터 결과 보고를 받지만, 레드팀의 목적 및 비전을 잘 이해하지 못합니다</td>
+                            <td class="level-cell">보안 임원은 사전 일정이 잡힌 레드팀 결과 보고를 받습니다. 레드팀의 목적 및 비전을 이해하고 있습니다. 경영진은 기존 협업 경험을 바탕으로 필요시 레드팀에 지원을 요청합니다</td>
+                            <td class="level-cell">보안 임원과 작전 결과 외의 주제를 논의하기 위한 정기 일정이 있습니다. 경영진은 레드팀 작전의 가치를 높이기 위해 지원합니다. 레드팀은 경영진의 우려사항을 파악하고 이해해 작전을 수립합니다.</td>
+                            <td class="level-cell">레드팀은 지속적으로 가치와 영향력을 입증했습니다. 사업부/보안 경영진이 조직 의사결정을 위해 레드팀과 적극 협업합니다 </td>
+                        </tr>
+                        <tr>
+                            <td class="subject-cell">비즈니스 및 기술 환경에 대한 지식</td>
+                            <td class="level-cell">현재 사용중인 보안 솔루션들을 알고 있습니다</td>
+                            <td class="level-cell">반복적인 오퍼레이션을 통해 보안 솔루션, 소프트웨어, 서비스, 비즈니스 프로세스에 대한 지식을 갖고 있습니다</td>
+                            <td class="level-cell">회사와 관련된 주요 소프트웨어, 서비스, 인력에 대한 문서화된 목록을 보유하고 있습니다</td>
+                            <td class="level-cell">다른 팀의 분야 전문가가 레드팀의 목록을 검증합니다</td>
+                            <td class="level-cell">조직의 보안 현황에 영향을 미치는 주요 기술 변화(예를 들자면 EDR 교체나 네트워크 통합, 등)를 논의하는 자리에 레드팀이 참여합니다</td>
+                        </tr>
+                        <tr>
+                            <td class="subject-cell">오퍼레이션 역량</td>
+                            <td class="level-cell">레드팀 지식 부족으로 인해 외부 인원과 내부 인원들이 같이 업무를 진행합니다</td>
+                            <td class="level-cell">작전 보안을 고려하지 않고 레드팀을 진행하며, 내부 인원들은 일반적인 TTP를 실행할 수 있는 역량을 갖추고 있습니다</td>
+                            <td class="level-cell">일반적인 TTP를 고도화해 사용할 수 있습니다. AD와 같이 기업 IT 환경에서 자주 사용되는 소프트웨어/기술/시스템에 대한 깊은 도메인 지식을 갖고 있습니다. 공격 단계나 요구 사항에 맞는 전문 분야에 대해 알고 있는 상태입니다</td>
+                            <td class="level-cell">오퍼레이션 목표와 관련된 큰 취약점을 종종 발견합니다. 방어 회피/우회에 능숙합니다. 환경에서 보기 드문 기술이나 시스템에 대한 전문 지식을 가지고 있습니다. 각 레드팀 분야에 맞는 분야 전문가(SME: Subject Matter Expert)가 팀 내에 있습니다</td>
+                            <td class="level-cell">작전 중 차질이 생겨도 목표를 달성할 수 있는 회복력(?)을 갖추고 있습니다. 작전이나 CTI 요구사항에 맞춰 TTP를 유연하게 수정할 수 있습니다. 오펜시브 시큐리티 관련 업무 요구를 충족할 수 있는 인력, 자원, 지원을 보유하고 있습니다 </td>
+                        </tr>
+                        <tr>
+                            <td class="subject-cell">개발 역량</td>
+                            <td class="level-cell">기본적인 스크립팅을 할 수 있습니다</td>
+                            <td class="level-cell">기본적인 스크립트들을 넘어 커스텀 솔루션을 개발할 수 있습니다. 단, 소스코드 관리나 코드 스타일 가이드등의 공식적인 개발 프로세스는 갖추지 못했습니다</td>
+                            <td class="level-cell">보안 우회 및 탐지 우회를 위해 기본적인 TTP를 수정해 새롭게 구현할 수 있습니다. 기본적인 개발 원칙을 준수하며, 소스코드 관리가 이뤄집니다</td>
+                            <td class="level-cell">스테이지 0 페이로드나 임플랜트처럼 업무에 필요한 커스텀 솔루션을 개발할 수 있습니다. 소스코드는 자동화된 검사를 거치며, 유닛 테스트 및 기능 테스트가 진행됩니다</td>
+                            <td class="level-cell">커스텀 C2 등 툴을 자체 개발하며, 자동화된 CI/CD 파이프라인과 개발 전담 인력을 보유하고 있습니다 </td>
+                        </tr>
+                        <tr>
+                            <td class="subject-cell">트레이닝 및 교육</td>
+                            <td class="level-cell">팀 또는 개인 차원에서 교육 및 성장 기회를 거의 추구하지 않습니다. 교육이나 트레이닝을 위한 시간이 일관적으로 제공되지 않습니다</td>
+                            <td class="level-cell">지금 당장 필요한 지식의 격차를 해소하거나, 기존의 자격증을 유지하기 위한 시간이 제공됩니다. 팀 내 역할 분담이 존재하며, 직급 수준을 따라갑니다</td>
+                            <td class="level-cell">6개월마다 현재 팀 내 필요한 지식이 뭔지 검토합니다. 강의나 연구 기회를 위해 예산과 시간이 따로 마련됩니다. 팀 내 역할 분담 및 직급이 명확하게 구분되어 있습니다</td>
+                            <td class="level-cell">개인 또는 팀 역량 평가를 통해 필요한 훈련 및 개발을 알아냅니다. 팀에서 필요한 지식이 뭔지 주기적으로 알아냅니다</td>
+                            <td class="level-cell">팀원들은 본인과 팀의 발전을 위한 개인 연구 기회를 갖도록 지원(시간/예산, 등)받습니다. 신입 또는 주니어 레벨의 팀원을 위한 내부 교육이 제공됩니다 </td>
+                        </tr>
+                        <tr class="category-row">
+                            <td colspan="6">📊 Program (프로그램)</td>
+                        </tr>
+                        <tr>
+                            <td class="subject-cell">레드팀 서비스 종류</td>
+                            <td class="level-cell">레드팀 업무와 다른 오펜시브 시큐리티 업무 (모의해킹, 취약점 점검, 등)가 구분되지 않습니다</td>
+                            <td class="level-cell">다양한 요구 사항을 충족하기 위해 공개 오퍼레이션이나 비공개 오퍼레이션을 진행합니다</td>
+                            <td class="level-cell">오퍼레이션 뿐만 아니라 공격자 분석, 아키텍쳐 리뷰, 테이틀 탑(Table Top) 훈련, 또는 블루팀이 필요로 하는 업무를 수행합니다 </td>
+                            <td class="level-cell">블루팀이 원할 때마다 온-디맨드하게 레드팀 오퍼레이션이나 TTP 실행이 가능합니다</td>
+                            <td class="level-cell">비즈니스 요구사항에 맞춘 독특하고 고도화된 오펜시브 시큐리티 서비스를 개발 및 제공합니다</td>
+                        </tr>
+                        <tr>
+                            <td class="subject-cell">전략</td>
+                            <td class="level-cell">필요성은 이해하지만 장기적인 계획 능력이 부족한 상태입니다. 오퍼레이션 계획은 한 달내에 이뤄지며, 다른팀과의 관계 등의 중요한 관계를 이해하지 못하고 있습니다</td>
+                            <td class="level-cell">비전, 미션, 목표가 만들어졌으며, 해당 목표들을 달성하기 위한 요구 사항들을 파악하고 있습니다. 주요 이해관계자들과 연락할 수 있는 연락 담당자가 있습니다</td>
+                            <td class="level-cell">레드팀 기술, 인력, 프로세스의 간극을 파악하고 이를 해결하기 위한 계획을 최소한 2분기 이상 나열해놓은 로드맵을 갖고 있습니다. 주요 이해관계자들 또한 이 로드맵을 잘 이해하고 있으며, 비즈니스 목표에 걸맞는 로드맵입니다</td>
+                            <td class="level-cell">단기 목표및 장기 목표를 설정했습니다. 지표를 통해 진행 상황을 모니터링 하고 있습니다</td>
+                            <td class="level-cell">레드팀 전략은 조직(회사) 전체의 의사결정과 목표, 그리고 전반적인 보안 현황에 영향을 미칩니다 </td>
+                        </tr>
+                        <tr>
+                            <td class="subject-cell">지표</td>
+                            <td class="level-cell">오퍼레이션과 관련된 가장 기본적인 정보만 개인의 기억에 의존해 기록합니다</td>
+                            <td class="level-cell">취약점 갯수와 같이 작업 항목과 관련된 기본적인 지표를 기록합니다</td>
+                            <td class="level-cell">분기별로 평가되는 KPI (핵심 성과 지표)와 KRI (핵심 위험 지표)가 정의되었으며, 내부적으로 보고됩니다</td>
+                            <td class="level-cell">KPI와 KRI가 조직 차원에서 관리됩니다. 레드팀 지표와 목표는 블루팀의 지표와 관련이 있으며, 보고됩니다</td>
+                            <td class="level-cell">레드팀 업무 지표 관련된 데이터 소스 트래킹 지표들이 자동으로 비즈니스 인젤리전스 플랫폼으로 전송됩니다 </td>
+                        </tr>
+                        <tr>
+                            <td class="subject-cell">지식 공유</td>
+                            <td class="level-cell">오퍼레이션 관련 지식은 내부적으로 공유되며, 가끔 심각한 것들만 블루팀에게 공유합니다</td>
+                            <td class="level-cell">주기적으로 조직 내 다른 부서나 보안 인력에 레드팀 관련 지식을 공유합니다</td>
+                            <td class="level-cell">조직내 다양한 레벨의 팀에게 주기적으로 지식을 공유합니다. 레드팀과 관련된 오픈소스 프로젝트에 기여합니다</td>
+                            <td class="level-cell">레드팀과 관련된 공개적인 발표자리에 참여합니다. 회사 뿐만 아니라 업계와 꾸준히 소통합니다</td>
+                            <td class="level-cell">오펜시브 시큐리티 업계 기여자로서 활동하며, 보안 컨퍼런스에 발표 경험이 있거나, 유명한 툴/TTP/지식 등을 공유한 경험이 있습니다 </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="model-categories">
+            <h2 style="text-align: center; font-size: 2.5rem; margin-bottom: 40px;">The Model</h2>
+
+            <!-- Processes Category -->
+            <div class="category" data-category="processes">
+                <div class="category-header">
+                    <h2>🔄 Processes (프로세스)</h2>
+                    <span class="category-icon">▼</span>
+                </div>
+                <div class="category-content">
+                        <div class="subject-section">
+                            <h3 class="subject-title">지속적 성장</h3>
+                            <div class="maturity-levels">
+                                <div class="maturity-level">
+                                    <h4>Level 1</h4>
+                                    <p>개인적으로 업무를 보며, 가끔 개인 노트를 작성합니다</p>
+                                </div>
+                                <div class="maturity-level">
+                                    <h4>Level 2</h4>
+                                    <p>목표지향적으로 움직이며, 주요 오퍼레이션 이후 얼마나 발전했는지 알아보기 위해 사후 분석 및 회고를 합니다. 팀의 부족한 부분에 대한 전반적인 이해가 있으며, 이를 해결하기 위한 대략적인 계획이 있습니다 </p>
+                                </div>
+                                <div class="maturity-level">
+                                    <h4>Level 3</h4>
+                                    <p>주기적으로 레드팀 오퍼레이션 외 다른 업무들에 대한 사후 분석 및 회고를 진행합니다. 팀의 개선 사항과 운영 목표를 달성하기 위한 명확한 로드맵을 갖고 있습니다</p>
+                                </div>
+                                <div class="maturity-level">
+                                    <h4>Level 4</h4>
+                                    <p>로드맵 목표들에 대한 진행 상황을 모니터링 하기 위한 지표가 있습니다. 개선 사항은 때때로 달성되며, 발견된 문제와 달성하고자 하는 목표에 기반한 업무들이 만들어집니다</p>
+                                </div>
+                                <div class="maturity-level">
+                                    <h4>Level 5</h4>
+                                    <p>레드팀 기회에 대해 논의하고 현 방향을 유지할지 혹은 피벗할지 결정합니다. 사후 검토를 통해 프로세스 및 오퍼레이션 개선 사항을 일관되게 도출합니다. 보안 조직 계획 수립 시 레드팀 로드맵이 반영됩니다</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="subject-section">
+                            <h3 class="subject-title">지식 베이스</h3>
+                            <div class="maturity-levels">
+                                <div class="maturity-level">
+                                    <h4>Level 1</h4>
+                                    <p>필요에 따라 지식을 공유하기 위한 미팅/세션을 진행합니다</p>
+                                </div>
+                                <div class="maturity-level">
+                                    <h4>Level 2</h4>
+                                    <p>체계없는 기록과 문서들이 여러 장소 또는 매체에 저장되어 있습니다</p>
+                                </div>
+                                <div class="maturity-level">
+                                    <h4>Level 3</h4>
+                                    <p>팀 전체가 사용하는 지식 베이스가 있지만, 불규칙적으로 업데이트 됩니다</p>
+                                </div>
+                                <div class="maturity-level">
+                                    <h4>Level 4</h4>
+                                    <p>팀 전체가 사용하는 하드닝된 지식 베이스가 있고, 자주 하는 업무 및 필요 사항들을 문서화 해놨습니다</p>
+                                </div>
+                                <div class="maturity-level">
+                                    <h4>Level 5</h4>
+                                    <p>팀 전체가 사용하고 안전하게 관리되고 있는 지식 베이스를 보유하고 있으며, 정기적으로 효용성을 검토하고 레드팀의 모든 활동 과정에서 주기적으로 이를 업데이트합니다</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="subject-section">
+                            <h3 class="subject-title">업무 관리</h3>
+                            <div class="maturity-levels">
+                                <div class="maturity-level">
+                                    <h4>Level 1</h4>
+                                    <p>팀원들이 개인적으로 서로 다른 목표를 정하고 실행합니다</p>
+                                </div>
+                                <div class="maturity-level">
+                                    <h4>Level 2</h4>
+                                    <p>운영 목표와 발전 목표를 이해하고 있지만, 해당 목표들을 관리하거나 책임을 지는 인원은 없습니다</p>
+                                </div>
+                                <div class="maturity-level">
+                                    <h4>Level 3</h4>
+                                    <p>현재와 미래 업무에 관련된 로드맵을 가지고 있으며, 리더쉽이 책임을 집니다</p>
+                                </div>
+                                <div class="maturity-level">
+                                    <h4>Level 4</h4>
+                                    <p>업무 관리를 위한 플랫폼을 사용하며, 성과 측정 기준을 명확히 이해하고 있습니다. 리더쉽의 감시 없이도 팀원 스스로 목표 달성에 대한 책임을 집니다</p>
+                                </div>
+                                <div class="maturity-level">
+                                    <h4>Level 5</h4>
+                                    <p>팀원들은 팀 내 다른 활동에 대한 깊은 이해가 있어 필요시 협업하거나 중요 영역에서 역량을 집중할 수 있습니다. 팀 전체가 인지하고 있는 백로그(backlog)를 기반으로 자기주도적으로 작업할 수 있도록 작업 관리 플랫폼이 효과적으로 활용되고 있습니다</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="subject-section">
+                            <h3 class="subject-title">오퍼레이션 계획 및 선정</h3>
+                            <div class="maturity-levels">
+                                <div class="maturity-level">
+                                    <h4>Level 1</h4>
+                                    <p>오퍼레이션 목표는 개인의 의견이나 긴급한 필요에 의해 결정되며, 팀 전체의 의견이 포함되지 않습니다. 오퍼레이션은 시작 전 몇 주 동안 계획됩니다</p>
+                                </div>
+                                <div class="maturity-level">
+                                    <h4>Level 2</h4>
+                                    <p>회사의 주요 서비스 및 인프라를 대상으로 오퍼레이션을 진행합니다</p>
+                                </div>
+                                <div class="maturity-level">
+                                    <h4>Level 3</h4>
+                                    <p>위협 인텔리전스를 활용해 오퍼레이션 목표를 만들어내며, 적어도 1분기 동안 계획합니다. 오퍼레이션과 관련된 제안 사항 및 요구 사항을 받아드리는 명확한 절차를 갖고 있습니다</p>
+                                </div>
+                                <div class="maturity-level">
+                                    <h4>Level 4</h4>
+                                    <p>블루팀(사이버 위협 인텔리전스, 침해 대응, 위협 헌팅)과  IT 운영팀의 고민, 우려, 문제를 반영해 오퍼레이션이 계획 되며, 적어도 2분기 이상의 계획 기간을 갖습니다</p>
+                                </div>
+                                <div class="maturity-level">
+                                    <h4>Level 5</h4>
+                                    <p>비즈니스적 필요성, 위협 인텔리전스, 중요도, 조직에서 정의한 기준등에 관련된 객관적인 지표를 바탕으로 오퍼레이션이 계획됩니다. 긴급한 문제를 해결하기 위해 비정기적으로 긴급 오퍼레이션이 수행될 수 있지만, 이는 다른 업무 산출물에 영향을 주지 않습니다.  </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="subject-section">
+                            <h3 class="subject-title">오퍼레이션 문서화</h3>
+                            <div class="maturity-levels">
+                                <div class="maturity-level">
+                                    <h4>Level 1</h4>
+                                    <p>업무와 관련된 노트를 개인이 작성해 보관합니다</p>
+                                </div>
+                                <div class="maturity-level">
+                                    <h4>Level 2</h4>
+                                    <p>툴들이 만들어낸 로그를 바탕으로 문서화 합니다</p>
+                                </div>
+                                <div class="maturity-level">
+                                    <h4>Level 3</h4>
+                                    <p>문서 또는 로그를 수동으로 작성하거나, 툴들의 "내보내기" 기능을 사용합니다</p>
+                                </div>
+                                <div class="maturity-level">
+                                    <h4>Level 4</h4>
+                                    <p>행위 및 로그는 중앙화된 위치에 저장되며, 약간의 문서화/로깅 자동화가 존재합니다</p>
+                                </div>
+                                <div class="maturity-level">
+                                    <h4>Level 5</h4>
+                                    <p>레드팀 활동은 중앙 저장소에 문서화/기록 되며, 침해지표(IoC)와 행위에 대한 자동 보고 기능이 존재합니다 </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="subject-section">
+                            <h3 class="subject-title">구성 관리</h3>
+                            <div class="maturity-levels">
+                                <div class="maturity-level">
+                                    <h4>Level 1</h4>
+                                    <p>소스코드, 인프라 구성 ,문서화, 툴을 일관성 없이 다양한 곳에 보관합니다</p>
+                                </div>
+                                <div class="maturity-level">
+                                    <h4>Level 2</h4>
+                                    <p>소스코드, 인프라 구성 ,문서화, 툴을 지정된 위치에 보관하지만, 버전 관리는 없습니다</p>
+                                </div>
+                                <div class="maturity-level">
+                                    <h4>Level 3</h4>
+                                    <p>업계 표준의 코드 저장소 및 버전 관리 툴을 사용하며, 각각 항목들에 대한 버전 관리가 이뤄집니다</p>
+                                </div>
+                                <div class="maturity-level">
+                                    <h4>Level 4</h4>
+                                    <p>Merge, Pull 리퀘스트와 비슷한 방식의 방법으로 검증된 버전 관리를 진행합니다</p>
+                                </div>
+                                <div class="maturity-level">
+                                    <h4>Level 5</h4>
+                                    <p>자동화된 CI/CD 프로세스를 활용해 신속한 배포와 품질 유지를 실현합니다</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="subject-section">
+                            <h3 class="subject-title">자원 관리</h3>
+                            <div class="maturity-levels">
+                                <div class="maturity-level">
+                                    <h4>Level 1</h4>
+                                    <p>라이센스, 계정 정보, 도메인 등의 자원들이 관리되고 있지 않으며, 소유권은 여러 사람에게 분산되어 있습니다</p>
+                                </div>
+                                <div class="maturity-level">
+                                    <h4>Level 2</h4>
+                                    <p>한명의 담당자가 자원을 관리하지만, 이와 관련된 정보가 전체 팀에게 공유되어 있지 않습니다</p>
+                                </div>
+                                <div class="maturity-level">
+                                    <h4>Level 3</h4>
+                                    <p>중앙화된 방식으로 자원들이 관리되며, 레드팀에 필요한 계정 정보들은 안전하게 보관됩니다</p>
+                                </div>
+                                <div class="maturity-level">
+                                    <h4>Level 4</h4>
+                                    <p>정기적인 비용, 자원의 필요, 혹은 만료 여부를 분기별로 검토합니다</p>
+                                </div>
+                                <div class="maturity-level">
+                                    <h4>Level 5</h4>
+                                    <p>관리/트래킹 체계를 통해 앞으로 30일 내에 처리해야할 작업을 알람 등으로 명확히 표시합니다</p>
+                                </div>
+                            </div>
+                        </div>
+                </div>
+            </div>
+            <!-- Technology Category -->
+            <div class="category" data-category="technology">
+                <div class="category-header">
+                    <h2>💻 Technology (기술)</h2>
+                    <span class="category-icon">▼</span>
+                </div>
+                <div class="category-content">
+                        <div class="subject-section">
+                            <h3 class="subject-title">툴링 (Tooling)</h3>
+                            <div class="maturity-levels">
+                                <div class="maturity-level">
+                                    <h4>Level 1</h4>
+                                    <p>이미 존재하는 툴을 그대로 사용하고, 간단한 커스텀 스크립트를 제작할 수 있습니다. 오퍼레이션에 필요한 요구 사항을 툴링으로 해결 할 수 없는 상태입니다</p>
+                                </div>
+                                <div class="maturity-level">
+                                    <h4>Level 2</h4>
+                                    <p>현존하는 툴을 수정하고 사용할 수 있는 정도의 역량을 갖췄습니다. 최신 버전의 C2 프레임워크들이 운영되고 있으며, 오퍼레이션에 필요한 요구 사항을 충족합니다</p>
+                                </div>
+                                <div class="maturity-level">
+                                    <h4>Level 3</h4>
+                                    <p>개발, 혹은 사용하는 툴들이 오퍼레이션의 주요 요구 사항을 충족합니다</p>
+                                </div>
+                                <div class="maturity-level">
+                                    <h4>Level 4</h4>
+                                    <p>오퍼레이션 요구 사항을 달성하기 위한 커스텀 툴을 개발하거나 현존하는 툴들을 수정합니다. 일상적인 업무 처리를 위한 자동화나 대규모 실행이 가능합니다</p>
+                                </div>
+                                <div class="maturity-level">
+                                    <h4>Level 5</h4>
+                                    <p>커스텀 또는 기타 툴로 레드팀 오퍼레이션의 모든 요구사항을 충족할 수 있으며, 오퍼레이션상 필요할 때 커스텀 C2 프레임워크를 사용합니다 </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="subject-section">
+                            <h3 class="subject-title">인프라</h3>
+                            <div class="maturity-levels">
+                                <div class="maturity-level">
+                                    <h4>Level 1</h4>
+                                    <p>현재 사용중인 사내망의 호스트 워크스테이션을 통해 오퍼레이션을 진행합니다. 레드팀 인프라는 작전 보안(OPSEC)을 고려하지 않습니다</p>
+                                </div>
+                                <div class="maturity-level">
+                                    <h4>Level 2</h4>
+                                    <p>인터넷에 공개된, 외부에서 접근 가능한 정적 인프라 1개를 운영하고 있습니다. 오퍼레이션 마다 인프라를 수동으로 만들며, 설정이 일정하지 않습니다. 최소한의 작전 보안을 적용합니다</p>
+                                </div>
+                                <div class="maturity-level">
+                                    <h4>Level 3</h4>
+                                    <p>수동 설정을 빨리 하기 위해 인프라 배포와 관련된 문서화가 잘 되어있습니다. 최선의 작전 보안 관행을 적용합니다</p>
+                                </div>
+                                <div class="maturity-level">
+                                    <h4>Level 4</h4>
+                                    <p>인프라 배포는 자동화 되어 있습니다. 인프라 보안과 관련해 자체 보안 평가를 실시합니다</p>
+                                </div>
+                                <div class="maturity-level">
+                                    <h4>Level 5</h4>
+                                    <p>레드팀 인프라는 쉽게 커스터마이징이 가능합니다. 인프라 설정 시 작전 보안을 고려하며, 내부, 혹은 외부 써드 파티로부터 검토 및 점검을 받습니다. 오퍼레이션 시 다양한 C2 채널 (HTTP/S, DNS, DoH, ICMP, 등)을 사용합니다. </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="subject-section">
+                            <h3 class="subject-title">테스트 환경</h3>
+                            <div class="maturity-levels">
+                                <div class="maturity-level">
+                                    <h4>Level 1</h4>
+                                    <p>테스트 환경은 있지만, 다양한 설정 (VM, 운영체제 버전, AV 시그니쳐 날짜, 등)이 제각각입니다</p>
+                                </div>
+                                <div class="maturity-level">
+                                    <h4>Level 2</h4>
+                                    <p>일관성 있지만 최소한으로 커스터마이징된 테스트 환경을 갖췄습니다</p>
+                                </div>
+                                <div class="maturity-level">
+                                    <h4>Level 3</h4>
+                                    <p>자사의 엔드포인트 보안 솔루션들이 반영된 테스트 환경을 갖췄습니다</p>
+                                </div>
+                                <div class="maturity-level">
+                                    <h4>Level 4</h4>
+                                    <p>자사의 보안 솔루션 스택이 반영된 테스트 환경을 갖췄으며, 환경 배포 자동화가 가능합니다</p>
+                                </div>
+                                <div class="maturity-level">
+                                    <h4>Level 5</h4>
+                                    <p>(레드팀이 아니라) 회사의 보안 조직은 협업을 위해 별도의 테스트 환경을 운영하고 있습니다. 이 환경은 프로덕션에 영향을 주지 않고 기술 스택의 다양한 요소들을 테스트 하도록 재구성할 수 있습니다. </p>
+                                </div>
+                            </div>
+                        </div>
+                </div>
+            </div>
+            <!-- People Category -->
+            <div class="category" data-category="people">
+                <div class="category-header">
+                    <h2>👥 People (인력)</h2>
+                    <span class="category-icon">▼</span>
+                </div>
+                <div class="category-content">
+                        <div class="subject-section">
+                            <h3 class="subject-title">블루팀과의 관계</h3>
+                            <div class="maturity-levels">
+                                <div class="maturity-level">
+                                    <h4>Level 1</h4>
+                                    <p>블루팀의 레드팀 소통 담당자가 정해져 있지 않습니다. 블루팀과의 소통은 일관성 없고, 산발적으로 이뤄집니다</p>
+                                </div>
+                                <div class="maturity-level">
+                                    <h4>Level 2</h4>
+                                    <p>블루팀 담당자가 정해져 있습니다. 소통은 비정기적으로 이뤄집니다. 팀 구성원들 끼리 소통 및 지식을 공유합니다. 레드팀 오퍼레이션 중 갈등 해결 프로세스에 대한 일반적인 이해가 있습니다</p>
+                                </div>
+                                <div class="maturity-level">
+                                    <h4>Level 3</h4>
+                                    <p>블루팀이 이해관계자로서 레드팀과 같이 일하며, 갈등 해소 프로세스에 대한 문서화가 존재합니다. 블루팀과 정기적으로 만나 업무 필요 사항, 성과 및 지표, 레드팀 관련 주제 등을 공유합니다</p>
+                                </div>
+                                <div class="maturity-level">
+                                    <h4>Level 4</h4>
+                                    <p>다른 팀들과의 지식 공유 및 유대감 형성을 위해 정기적으로 만나 소통합니다. 갈등 해소 프로세스와 관련된 담당자, 소통 방법, R&R이 명확하게 관리됩니다</p>
+                                </div>
+                                <div class="maturity-level">
+                                    <h4>Level 5</h4>
+                                    <p>작전 계획 시 블루팀의 우려사항을 이해하고 이를 활용합니다. 블루팀 팀원들과 긴밀한 개인적 관계를 통해 빈번하고 비정기적인 지식 공유 및 개선이 이루어집니다</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="subject-section">
+                            <h3 class="subject-title">IT 운영 및 엔지니어링 팀과의 관계</h3>
+                            <div class="maturity-levels">
+                                <div class="maturity-level">
+                                    <h4>Level 1</h4>
+                                    <p>각 팀들의 연락 담당자가 없으며, 가끔 해당 도메인 전문가/담당자에게 질문하는 등의 일관성 없는 소통이 이뤄집니다</p>
+                                </div>
+                                <div class="maturity-level">
+                                    <h4>Level 2</h4>
+                                    <p>각 팀에 연락을 받을만한 담당자를 알고 있습니다. 팀원들끼리 비정기적으로 소통합니다</p>
+                                </div>
+                                <div class="maturity-level">
+                                    <h4>Level 3</h4>
+                                    <p>중요 엔지니어링 팀들의 분야 전문가(SME)를 알고 있습니다. 레드팀 업무 이후 엔지니어링 팀은 각자 분야에 맞는 레드팀 보고서를 받습니다</p>
+                                </div>
+                                <div class="maturity-level">
+                                    <h4>Level 4</h4>
+                                    <p>엔지니어링 팀들과 레드팀은 정기적으로 만나며, IT 환경 변경 사항과 관련해 정기적으로 회의를 진행합니다. 지식 공유와 유대감 형성을 위해 정기적으로 소통합니다</p>
+                                </div>
+                                <div class="maturity-level">
+                                    <h4>Level 5</h4>
+                                    <p>엔지니어링 및 아키텍처의 계획 또는 구현 단계 전에 레드팀 작전이 영향을 미칩니다. 엔지니어링 팀원들과 긴밀한 개인적 관계를 통해 빈번하고 비정기적인 지식 공유 및 개선이 이루어집니다</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="subject-section">
+                            <h3 class="subject-title">경영진과의 관계</h3>
+                            <div class="maturity-levels">
+                                <div class="maturity-level">
+                                    <h4>Level 1</h4>
+                                    <p>일관성 없이 간헐적으로 소통합니다. 예를 들어 경영진(임원)들은 레드팀 보고회에 불규칙적으로 참석합니다</p>
+                                </div>
+                                <div class="maturity-level">
+                                    <h4>Level 2</h4>
+                                    <p>보안 임원(CISO)은 레드팀으로부터 결과 보고를 받지만, 레드팀의 목적 및 비전을 잘 이해하지 못합니다</p>
+                                </div>
+                                <div class="maturity-level">
+                                    <h4>Level 3</h4>
+                                    <p>보안 임원은 사전 일정이 잡힌 레드팀 결과 보고를 받습니다. 레드팀의 목적 및 비전을 이해하고 있습니다. 경영진은 기존 협업 경험을 바탕으로 필요시 레드팀에 지원을 요청합니다</p>
+                                </div>
+                                <div class="maturity-level">
+                                    <h4>Level 4</h4>
+                                    <p>보안 임원과 작전 결과 외의 주제를 논의하기 위한 정기 일정이 있습니다. 경영진은 레드팀 작전의 가치를 높이기 위해 지원합니다. 레드팀은 경영진의 우려사항을 파악하고 이해해 작전을 수립합니다.</p>
+                                </div>
+                                <div class="maturity-level">
+                                    <h4>Level 5</h4>
+                                    <p>레드팀은 지속적으로 가치와 영향력을 입증했습니다. 사업부/보안 경영진이 조직 의사결정을 위해 레드팀과 적극 협업합니다 </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="subject-section">
+                            <h3 class="subject-title">비즈니스 및 기술 환경에 대한 지식</h3>
+                            <div class="maturity-levels">
+                                <div class="maturity-level">
+                                    <h4>Level 1</h4>
+                                    <p>현재 사용중인 보안 솔루션들을 알고 있습니다</p>
+                                </div>
+                                <div class="maturity-level">
+                                    <h4>Level 2</h4>
+                                    <p>반복적인 오퍼레이션을 통해 보안 솔루션, 소프트웨어, 서비스, 비즈니스 프로세스에 대한 지식을 갖고 있습니다</p>
+                                </div>
+                                <div class="maturity-level">
+                                    <h4>Level 3</h4>
+                                    <p>회사와 관련된 주요 소프트웨어, 서비스, 인력에 대한 문서화된 목록을 보유하고 있습니다</p>
+                                </div>
+                                <div class="maturity-level">
+                                    <h4>Level 4</h4>
+                                    <p>다른 팀의 분야 전문가가 레드팀의 목록을 검증합니다</p>
+                                </div>
+                                <div class="maturity-level">
+                                    <h4>Level 5</h4>
+                                    <p>조직의 보안 현황에 영향을 미치는 주요 기술 변화(예를 들자면 EDR 교체나 네트워크 통합, 등)를 논의하는 자리에 레드팀이 참여합니다</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="subject-section">
+                            <h3 class="subject-title">오퍼레이션 역량</h3>
+                            <div class="maturity-levels">
+                                <div class="maturity-level">
+                                    <h4>Level 1</h4>
+                                    <p>레드팀 지식 부족으로 인해 외부 인원과 내부 인원들이 같이 업무를 진행합니다</p>
+                                </div>
+                                <div class="maturity-level">
+                                    <h4>Level 2</h4>
+                                    <p>작전 보안을 고려하지 않고 레드팀을 진행하며, 내부 인원들은 일반적인 TTP를 실행할 수 있는 역량을 갖추고 있습니다</p>
+                                </div>
+                                <div class="maturity-level">
+                                    <h4>Level 3</h4>
+                                    <p>일반적인 TTP를 고도화해 사용할 수 있습니다. AD와 같이 기업 IT 환경에서 자주 사용되는 소프트웨어/기술/시스템에 대한 깊은 도메인 지식을 갖고 있습니다. 공격 단계나 요구 사항에 맞는 전문 분야에 대해 알고 있는 상태입니다</p>
+                                </div>
+                                <div class="maturity-level">
+                                    <h4>Level 4</h4>
+                                    <p>오퍼레이션 목표와 관련된 큰 취약점을 종종 발견합니다. 방어 회피/우회에 능숙합니다. 환경에서 보기 드문 기술이나 시스템에 대한 전문 지식을 가지고 있습니다. 각 레드팀 분야에 맞는 분야 전문가(SME: Subject Matter Expert)가 팀 내에 있습니다</p>
+                                </div>
+                                <div class="maturity-level">
+                                    <h4>Level 5</h4>
+                                    <p>작전 중 차질이 생겨도 목표를 달성할 수 있는 회복력(?)을 갖추고 있습니다. 작전이나 CTI 요구사항에 맞춰 TTP를 유연하게 수정할 수 있습니다. 오펜시브 시큐리티 관련 업무 요구를 충족할 수 있는 인력, 자원, 지원을 보유하고 있습니다 </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="subject-section">
+                            <h3 class="subject-title">개발 역량</h3>
+                            <div class="maturity-levels">
+                                <div class="maturity-level">
+                                    <h4>Level 1</h4>
+                                    <p>기본적인 스크립팅을 할 수 있습니다</p>
+                                </div>
+                                <div class="maturity-level">
+                                    <h4>Level 2</h4>
+                                    <p>기본적인 스크립트들을 넘어 커스텀 솔루션을 개발할 수 있습니다. 단, 소스코드 관리나 코드 스타일 가이드등의 공식적인 개발 프로세스는 갖추지 못했습니다</p>
+                                </div>
+                                <div class="maturity-level">
+                                    <h4>Level 3</h4>
+                                    <p>보안 우회 및 탐지 우회를 위해 기본적인 TTP를 수정해 새롭게 구현할 수 있습니다. 기본적인 개발 원칙을 준수하며, 소스코드 관리가 이뤄집니다</p>
+                                </div>
+                                <div class="maturity-level">
+                                    <h4>Level 4</h4>
+                                    <p>스테이지 0 페이로드나 임플랜트처럼 업무에 필요한 커스텀 솔루션을 개발할 수 있습니다. 소스코드는 자동화된 검사를 거치며, 유닛 테스트 및 기능 테스트가 진행됩니다</p>
+                                </div>
+                                <div class="maturity-level">
+                                    <h4>Level 5</h4>
+                                    <p>커스텀 C2 등 툴을 자체 개발하며, 자동화된 CI/CD 파이프라인과 개발 전담 인력을 보유하고 있습니다 </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="subject-section">
+                            <h3 class="subject-title">트레이닝 및 교육</h3>
+                            <div class="maturity-levels">
+                                <div class="maturity-level">
+                                    <h4>Level 1</h4>
+                                    <p>팀 또는 개인 차원에서 교육 및 성장 기회를 거의 추구하지 않습니다. 교육이나 트레이닝을 위한 시간이 일관적으로 제공되지 않습니다</p>
+                                </div>
+                                <div class="maturity-level">
+                                    <h4>Level 2</h4>
+                                    <p>지금 당장 필요한 지식의 격차를 해소하거나, 기존의 자격증을 유지하기 위한 시간이 제공됩니다. 팀 내 역할 분담이 존재하며, 직급 수준을 따라갑니다</p>
+                                </div>
+                                <div class="maturity-level">
+                                    <h4>Level 3</h4>
+                                    <p>6개월마다 현재 팀 내 필요한 지식이 뭔지 검토합니다. 강의나 연구 기회를 위해 예산과 시간이 따로 마련됩니다. 팀 내 역할 분담 및 직급이 명확하게 구분되어 있습니다</p>
+                                </div>
+                                <div class="maturity-level">
+                                    <h4>Level 4</h4>
+                                    <p>개인 또는 팀 역량 평가를 통해 필요한 훈련 및 개발을 알아냅니다. 팀에서 필요한 지식이 뭔지 주기적으로 알아냅니다</p>
+                                </div>
+                                <div class="maturity-level">
+                                    <h4>Level 5</h4>
+                                    <p>팀원들은 본인과 팀의 발전을 위한 개인 연구 기회를 갖도록 지원(시간/예산, 등)받습니다. 신입 또는 주니어 레벨의 팀원을 위한 내부 교육이 제공됩니다 </p>
+                                </div>
+                            </div>
+                        </div>
+                </div>
+            </div>
+            <!-- Program Category -->
+            <div class="category" data-category="program">
+                <div class="category-header">
+                    <h2>📊 Program (프로그램)</h2>
+                    <span class="category-icon">▼</span>
+                </div>
+                <div class="category-content">
+                        <div class="subject-section">
+                            <h3 class="subject-title">레드팀 서비스 종류</h3>
+                            <div class="maturity-levels">
+                                <div class="maturity-level">
+                                    <h4>Level 1</h4>
+                                    <p>레드팀 업무와 다른 오펜시브 시큐리티 업무 (모의해킹, 취약점 점검, 등)가 구분되지 않습니다</p>
+                                </div>
+                                <div class="maturity-level">
+                                    <h4>Level 2</h4>
+                                    <p>다양한 요구 사항을 충족하기 위해 공개 오퍼레이션이나 비공개 오퍼레이션을 진행합니다</p>
+                                </div>
+                                <div class="maturity-level">
+                                    <h4>Level 3</h4>
+                                    <p>오퍼레이션 뿐만 아니라 공격자 분석, 아키텍쳐 리뷰, 테이틀 탑(Table Top) 훈련, 또는 블루팀이 필요로 하는 업무를 수행합니다 </p>
+                                </div>
+                                <div class="maturity-level">
+                                    <h4>Level 4</h4>
+                                    <p>블루팀이 원할 때마다 온-디맨드하게 레드팀 오퍼레이션이나 TTP 실행이 가능합니다</p>
+                                </div>
+                                <div class="maturity-level">
+                                    <h4>Level 5</h4>
+                                    <p>비즈니스 요구사항에 맞춘 독특하고 고도화된 오펜시브 시큐리티 서비스를 개발 및 제공합니다</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="subject-section">
+                            <h3 class="subject-title">전략</h3>
+                            <div class="maturity-levels">
+                                <div class="maturity-level">
+                                    <h4>Level 1</h4>
+                                    <p>필요성은 이해하지만 장기적인 계획 능력이 부족한 상태입니다. 오퍼레이션 계획은 한 달내에 이뤄지며, 다른팀과의 관계 등의 중요한 관계를 이해하지 못하고 있습니다</p>
+                                </div>
+                                <div class="maturity-level">
+                                    <h4>Level 2</h4>
+                                    <p>비전, 미션, 목표가 만들어졌으며, 해당 목표들을 달성하기 위한 요구 사항들을 파악하고 있습니다. 주요 이해관계자들과 연락할 수 있는 연락 담당자가 있습니다</p>
+                                </div>
+                                <div class="maturity-level">
+                                    <h4>Level 3</h4>
+                                    <p>레드팀 기술, 인력, 프로세스의 간극을 파악하고 이를 해결하기 위한 계획을 최소한 2분기 이상 나열해놓은 로드맵을 갖고 있습니다. 주요 이해관계자들 또한 이 로드맵을 잘 이해하고 있으며, 비즈니스 목표에 걸맞는 로드맵입니다</p>
+                                </div>
+                                <div class="maturity-level">
+                                    <h4>Level 4</h4>
+                                    <p>단기 목표및 장기 목표를 설정했습니다. 지표를 통해 진행 상황을 모니터링 하고 있습니다</p>
+                                </div>
+                                <div class="maturity-level">
+                                    <h4>Level 5</h4>
+                                    <p>레드팀 전략은 조직(회사) 전체의 의사결정과 목표, 그리고 전반적인 보안 현황에 영향을 미칩니다 </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="subject-section">
+                            <h3 class="subject-title">지표</h3>
+                            <div class="maturity-levels">
+                                <div class="maturity-level">
+                                    <h4>Level 1</h4>
+                                    <p>오퍼레이션과 관련된 가장 기본적인 정보만 개인의 기억에 의존해 기록합니다</p>
+                                </div>
+                                <div class="maturity-level">
+                                    <h4>Level 2</h4>
+                                    <p>취약점 갯수와 같이 작업 항목과 관련된 기본적인 지표를 기록합니다</p>
+                                </div>
+                                <div class="maturity-level">
+                                    <h4>Level 3</h4>
+                                    <p>분기별로 평가되는 KPI (핵심 성과 지표)와 KRI (핵심 위험 지표)가 정의되었으며, 내부적으로 보고됩니다</p>
+                                </div>
+                                <div class="maturity-level">
+                                    <h4>Level 4</h4>
+                                    <p>KPI와 KRI가 조직 차원에서 관리됩니다. 레드팀 지표와 목표는 블루팀의 지표와 관련이 있으며, 보고됩니다</p>
+                                </div>
+                                <div class="maturity-level">
+                                    <h4>Level 5</h4>
+                                    <p>레드팀 업무 지표 관련된 데이터 소스 트래킹 지표들이 자동으로 비즈니스 인젤리전스 플랫폼으로 전송됩니다 </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="subject-section">
+                            <h3 class="subject-title">지식 공유</h3>
+                            <div class="maturity-levels">
+                                <div class="maturity-level">
+                                    <h4>Level 1</h4>
+                                    <p>오퍼레이션 관련 지식은 내부적으로 공유되며, 가끔 심각한 것들만 블루팀에게 공유합니다</p>
+                                </div>
+                                <div class="maturity-level">
+                                    <h4>Level 2</h4>
+                                    <p>주기적으로 조직 내 다른 부서나 보안 인력에 레드팀 관련 지식을 공유합니다</p>
+                                </div>
+                                <div class="maturity-level">
+                                    <h4>Level 3</h4>
+                                    <p>조직내 다양한 레벨의 팀에게 주기적으로 지식을 공유합니다. 레드팀과 관련된 오픈소스 프로젝트에 기여합니다</p>
+                                </div>
+                                <div class="maturity-level">
+                                    <h4>Level 4</h4>
+                                    <p>레드팀과 관련된 공개적인 발표자리에 참여합니다. 회사 뿐만 아니라 업계와 꾸준히 소통합니다</p>
+                                </div>
+                                <div class="maturity-level">
+                                    <h4>Level 5</h4>
+                                    <p>오펜시브 시큐리티 업계 기여자로서 활동하며, 보안 컨퍼런스에 발표 경험이 있거나, 유명한 툴/TTP/지식 등을 공유한 경험이 있습니다 </p>
+                                </div>
+                            </div>
+                        </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Red Team Capability Maturity Model. Licensed under Creative Commons.</p>
+    </footer>
+
+    <script>
+        // Category accordion functionality
+        document.querySelectorAll('.category').forEach(category => {
+            const header = category.querySelector('.category-header');
+            header.addEventListener('click', () => {
+                category.classList.toggle('active');
+            });
+        });
+
+        // Mobile menu toggle (placeholder)
+        document.querySelector('.mobile-menu').addEventListener('click', () => {
+            const navLinks = document.querySelector('.nav-links');
+            navLinks.style.display = navLinks.style.display === 'flex' ? 'none' : 'flex';
+        });
+    </script>
+</body>
+</html>
